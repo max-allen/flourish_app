@@ -1,22 +1,34 @@
 import React from 'react'
-import logo from './logo.svg'
+import styled from 'styled-components'
 import './App.css'
+import Card from '@material-ui/core/Card'
+import CardActions from '@material-ui/core/CardActions'
+import Button from '@material-ui/core/Button'
+import Input from '@material-ui/core/Input'
 
-export const App = () => (
-  <div className='App'>
-    <header className='App-header'>
-      <img src={logo} className='App-logo' alt='logo' />
-      <p>
-        Edit <code>src/App.js</code> and save to reload.
-      </p>
-      <a
-        className='App-link'
-        href='https://reactjs.org'
-        target='_blank'
-        rel='noopener noreferrer'
-      >
-        Learn React
-      </a>
-    </header>
-  </div>
-)
+const Layout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+`
+
+export const App = () => {
+  const clickHandler = () => {}
+  return (
+    <Layout>
+      <Card style={{ height: '100%' }}>
+        <Input />
+        <CardActions>
+          <Button
+            color='primary'
+            variant='outlined'
+            size='medium'
+            onClick={clickHandler}
+          >Confirm Quote
+          </Button>
+        </CardActions>
+        <Button />
+      </Card>
+    </Layout>
+  )
+}
+

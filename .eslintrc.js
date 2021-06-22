@@ -49,7 +49,7 @@ module.exports = {
     'import/extensions': OFF,
     'import/no-extraneous-dependencies': OFF,
     'no-param-reassign': OFF,
-    'no-console': ERROR,
+    'no-console': WARN,
     'consistent-return': OFF,
     'no-confusing-arrow': [ERROR, { allowParens: true }],
     'max-len': [ERROR, {
