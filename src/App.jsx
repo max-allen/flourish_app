@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import './App.css'
 import AudioPlayer from 'material-ui-audio-player'
@@ -16,9 +16,9 @@ const Layout = styled.div`
 `
 
 const Avatar = styled.img`
-  width: 100px;
+  width: ${p => (p.small ? '50px' : '100px')};
   border: 5px solid #000000;
-  border-radius: 60px;
+  border-radius: ${p => p.small && '60px'};
   margin-right 20px;
 `
 const StyledCard = styled(Card)`
@@ -30,12 +30,14 @@ const ShowHeader = styled.div`
   align-items: center;
 `
 
-const EpisodeCell = styled.div`
+const EpisodeCell = styled.button`
   padding: 1rem;
   border: 1px solid #e0e0e0;
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
+  text-align: left;
+  background-color: transparent;
 
   &:hover {
     border-radius: 3px;
@@ -48,6 +50,7 @@ const EpisodeCell = styled.div`
 export const App = () => {
   const [url, setUrl] = useState('')
   const [data, setData] = useState([])
+  const [selected, setSelected] = useState(null)
 
   const changeHandler = e => setUrl(e.target.value)
 
@@ -58,8 +61,6 @@ export const App = () => {
 
   const [initialShow] = data
   const initialItem = initialShow && initialShow.items[0]
-
-  console.log('ITEM', initialShow)
 
   return (
     <Layout>
@@ -81,25 +82,38 @@ export const App = () => {
         </Box>
         )}
         <Typography variant='h4'>Library</Typography>
+        { data.map(show => {
+          const listClickHandler = () => {
+            setSelected(show)
+          }
+          return (
+            <EpisodeCell onClick={listClickHandler}>
+              <ShowHeader>
+                <Avatar small src={show.icon} alt='avatar' />
+                <Typography variant='subtitle1'>{show.title}</Typography>
+              </ShowHeader>
+            </EpisodeCell>
+          )
+        })}
       </StyledCard>
 
       <StyledCard>
-        { data.map(show => (
-          <div key={show.version}>
+        { selected && (
+          <div key={selected.version}>
             <ShowHeader>
-              <Avatar src={show.icon} alt='avatar' />
+              <Avatar src={selected.icon} alt='avatar' />
               <Typography variant='h5'>
-                {show.title}
+                {selected.title}
               </Typography>
             </ShowHeader>
             <Typography variant='subtitle1'>
-              {show.description}
+              {selected.description}
             </Typography>
           </div>
-        ))}
+        )}
         <hr />
         <Typography variant='h5'>Episodes</Typography>
-        { initialShow && initialShow.items.map(item => (
+        { selected && selected.items.map(item => (
           <EpisodeCell key={item.id}>
             <Typography variant='h6'>
               {item.title}
