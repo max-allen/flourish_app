@@ -27,6 +27,7 @@ module.exports = {
     'class-methods-use-this': OFF,
     'arrow-parens': [ERROR, 'as-needed'],
     'global-require': OFF,
+    'no-unused-vars': WARN,
     'no-underscore-dangle': OFF,
     'no-unreachable': ERROR,
     'no-restricted-syntax': [ERROR, {
