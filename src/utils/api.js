@@ -4,7 +4,6 @@ export const ENDPOINTS = {
   podcasts: 'api/podcasts'
 }
 
-
 const httpClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
