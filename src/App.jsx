@@ -8,7 +8,7 @@ import CardActions from '@material-ui/core/CardActions'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
-import { callApi } from './api'
+import { callApi } from './utils/api'
 
 const Layout = styled.div`
   display: grid;
@@ -30,6 +30,13 @@ const ShowHeader = styled.div`
   align-items: center;
 `
 
+const hoverAndSelectedStyles = `
+  border-radius: 3px;
+  cursor: pointer;
+  background-color: #29b6f6;
+  color: #ffffff;
+`
+
 const EpisodeCell = styled.button`
   padding: 1rem;
   border: 1px solid #e0e0e0;
@@ -39,11 +46,10 @@ const EpisodeCell = styled.button`
   text-align: left;
   background-color: transparent;
 
+  ${p => p.selected && hoverAndSelectedStyles}
+
   &:hover {
-    border-radius: 3px;
-    cursor: pointer;
-    background-color: #29b6f6;
-    color: #ffffff;
+    ${hoverAndSelectedStyles}
   }
 `
 
