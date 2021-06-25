@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 export const ENDPOINTS = {
+  auth: 'auth',
   podcasts: 'api/podcasts'
 }
 
@@ -15,12 +16,12 @@ const httpClient = axios.create({
 httpClient.interceptors.response.use(res => res, err => Promise.reject(err))
 
 export const callApi = async ({
-  url = '/',
+  endpoint,
   method = 'get',
   body = {}
 }) => {
   try {
-    const resp = await httpClient({ method, url, data: body })
+    const resp = await httpClient({ method, url: endpoint, data: body })
     return resp
   } catch (error) {
     return Promise.reject(error)

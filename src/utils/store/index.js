@@ -11,7 +11,6 @@ const presistConfig = {
   storage
 }
 
-
 const initStore = preloadedState => {
   const middleware = [thunkMiddleware, ...appMiddleware]
   const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 30 })
