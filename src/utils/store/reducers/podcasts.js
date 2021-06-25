@@ -39,7 +39,7 @@ export const podcastsReducer = (state = defaultState, action) => {
       return {
         ...state,
         loading: false,
-        results: [...state.results, podcast],
+        results: state.results ? [...state.results, podcast] : [podcast],
         addError: defaultState.addError
       }
     }
