@@ -8,7 +8,17 @@ import CardActions from '@material-ui/core/CardActions'
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button'
 import Input from '@material-ui/core/Input'
-import { addPodcast } from '../utils/store/actions'
+import { DragDropContainer, DropTarget } from 'react-drag-drop-container'
+import { addPodcast, addPlaylist } from '../utils/store/actions'
+import { truncate } from '../utils/truncate'
+
+const StyledCardActions = styled(CardActions)`
+  padding-left: 0
+`
+
+const StyledInput = styled(Input)`
+  width: 100%;
+`
 
 const Layout = styled.div`
   display: grid;
@@ -45,10 +55,22 @@ const EpisodeCell = styled.button`
   border-bottom: 0;
   text-align: left;
   background-color: transparent;
-  width: 100%;
-
+  width: 100%; 
   ${p => p.selected && hoverAndSelectedStyles}
 
+  &:hover {
+    ${hoverAndSelectedStyles}
+  }
+`
+
+const PlaylistSlot = styled.div`
+  margin: 4rem 0;
+  height: 8rem;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
   &:hover {
     ${hoverAndSelectedStyles}
   }
@@ -59,8 +81,13 @@ export const Home = () => {
   const [selected, setSelected] = useState(null)
   const [selectedEpisode, setSelectedEpisode] = useState(null)
 
-  const store = useSelector(({ podcasts: { results }, users: { results: userDetails } }) => ({ results, userDetails }))
-  const { results, userDetails } = store
+  const store = useSelector(({
+    playlists: { results: playlist },
+    podcasts: { results },
+    users: { results: userDetails }
+  }) => ({ results, userDetails, playlist }))
+
+  const { results, userDetails, playlist } = store
 
   const dispatch = useDispatch()
 
@@ -70,11 +97,13 @@ export const Home = () => {
     dispatch(addPodcast(url, userDetails.id))
   }
 
+  const playlistSlots = Array.from({ length: 10 }, (el, idx) => idx + 1)
+
   return (
     <Layout>
       <StyledCard>
-        <Input onChange={changeHandler} />
-        <CardActions>
+        <StyledInput onChange={changeHandler} />
+        <StyledCardActions>
           <Button
             color='primary'
             variant='outlined'
@@ -83,11 +112,16 @@ export const Home = () => {
           >Add Podcast
           </Button>
 
-        </CardActions>
+        </StyledCardActions>
         { selectedEpisode && (
-        <Box mt={3} mb={3}>
-          <AudioPlayer src={selectedEpisode.audioUrl} autoplay />
-        </Box>
+          <>
+            <Typography>
+              {`Now Playing: ${selectedEpisode.title}`}
+            </Typography>
+            <Box mt={3} mb={3} ml={1.5}>
+              <AudioPlayer src={selectedEpisode.audioUrl} autoplay />
+            </Box>
+          </>
         )}
         <Typography variant='h4'>Library</Typography>
         { results && results.map(podcast => {
@@ -98,7 +132,7 @@ export const Home = () => {
           const isSelected = selected ? selected.id === podcast.id : null
 
           return (
-            <EpisodeCell key={podcast.id} onClick={listClickHandler} selected={isSelected}>
+            <EpisodeCell key={podcast.id} onClick={listClickHandler} selected={isSelected} fullWidth>
               <ShowHeader>
                 <Avatar small src={podcast.iconUrl} alt='avatar' />
                 <Typography variant='subtitle1'>{podcast.title}</Typography>
@@ -128,18 +162,29 @@ export const Home = () => {
           const episodeClickHandler = () => {
             setSelectedEpisode(episode)
           }
+          const onDrop = () => {
+            if (!playlist) {
+              dispatch(addPlaylist(episode.id, userDetails.id))
+            }
+          }
 
           const isSelected = selectedEpisode ? selectedEpisode.id === episode.id : null
 
           return (
-            <EpisodeCell key={episode.id} onClick={episodeClickHandler} selected={isSelected}>
-              <Typography variant='h6'>
-                {episode.title}
-              </Typography>
-              <Typography>
-                {episode.description}
-              </Typography>
-            </EpisodeCell>
+            <DragDropContainer
+              key={episode.id}
+              targetKey='playlistDrop'
+              onDrop={onDrop}
+            >
+              <EpisodeCell onClick={episodeClickHandler} selected={isSelected}>
+                <Typography variant='h6'>
+                  {episode.title}
+                </Typography>
+                <Typography>
+                  {truncate(episode.description, 150)}
+                </Typography>
+              </EpisodeCell>
+            </DragDropContainer>
           )
         })}
       </StyledCard>
@@ -148,6 +193,42 @@ export const Home = () => {
         <Typography variant='h4'>
           Playlist
         </Typography>
+        <hr />
+        {
+          playlistSlots.map(slot => {
+            let episode
+            if (playlist) {
+              const [first] = playlist.sequence
+              if (first.position === slot) {
+                ({ episode } = first)
+              }
+            }
+            if (episode) {
+              const episodeClickHandler = () => {
+                setSelectedEpisode(episode)
+              }
+              const isSelected = selectedEpisode ? selectedEpisode.id === episode.id : null
+
+              return (
+                <EpisodeCell key={slot} onClick={episodeClickHandler} selected={isSelected}>
+                  <Typography variant='h6'>
+                    {episode.title}
+                  </Typography>
+                </EpisodeCell>
+              )
+            }
+
+            return (
+              <DropTarget
+                key={slot}
+                targetKey='playlistDrop'
+                dropData={slot}
+              >
+                <PlaylistSlot>Add Episode</PlaylistSlot>
+              </DropTarget>
+            )
+          })
+        }
       </StyledCard>
     </Layout>
   )

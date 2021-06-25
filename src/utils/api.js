@@ -2,7 +2,8 @@ import axios from 'axios'
 
 export const ENDPOINTS = {
   auth: 'auth',
-  podcasts: 'api/podcasts'
+  podcasts: 'api/podcasts',
+  playlists: 'api/playlists'
 }
 
 const httpClient = axios.create({
